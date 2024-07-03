@@ -1,5 +1,7 @@
-﻿namespace OGMUtility.Logger;
-
-public class OGMLogger
+﻿namespace OGMUtility.Logger
 {
+    public class OGMLogger
+    {
+        
+    }
 }
