@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text;
 
 namespace OGMUtility.Logger
 {        
@@ -140,6 +142,48 @@ namespace OGMUtility.Logger
             }
         }
 
+        private static string PostProcessMsg(string msg, bool isStackTrace = false)
+        {
+            StringBuilder strBuilder = new(logConfig.logPrefix, logConfig.logMaxLen);
+            if (logConfig.showTime)
+            {
+                strBuilder.Append($"[{DateTime.Now.ToString("hh:mm:ss:fff")}]");
+            }
+
+            if (logConfig.showTread)
+            {
+                strBuilder.Append($"<{Thread.CurrentThread.ManagedThreadId}>:");
+            }
+
+            strBuilder.Append($" {msg}\n");
+
+            if (isStackTrace)
+            {
+                string trace = GetStackTrace();
+                if (!String.IsNullOrEmpty(trace))
+                {
+                    strBuilder.Append(trace);
+                    strBuilder.AppendLine();
+                }
+            }
+
+            return strBuilder.ToString();
+        }
+
+        private static string GetStackTrace()
+        {
+            StringBuilder strTraces = new(logConfig.logMaxLen);
+            StackTrace traces = new(3, true);
+            for (int i = 0; i < traces.FrameCount; i++)
+            {
+                var trace = traces.GetFrame(i);
+                var traceMethod = trace.GetMethod();
+                strTraces.AppendLine($"\t{trace.GetFileName()} => {traceMethod.DeclaringType.Name}::{traceMethod.Name}({trace.GetFileLineNumber()})");
+            }
+
+            return strTraces.ToString();
+        }
+
         private static ILogger logger;
         public static LoggerConfig logConfig;
         public static void InitLogConfig(LoggerConfig cfg = null)
@@ -169,7 +213,7 @@ namespace OGMUtility.Logger
             {
                 return;
             }
-            logger?.Log(msg, color);
+            logger?.Log(PostProcessMsg(msg), color);
         }
 
         public static void Warning(string msg)
@@ -178,7 +222,7 @@ namespace OGMUtility.Logger
             {
                 return;
             }
-            logger?.Warning(msg);
+            logger?.Warning(PostProcessMsg(msg));
         }
 
         public static void Error(string msg)
@@ -187,7 +231,7 @@ namespace OGMUtility.Logger
             {
                 return;
             }
-            logger?.Error(msg);
+            logger?.Error(PostProcessMsg(msg, true));
         }
     }
 }

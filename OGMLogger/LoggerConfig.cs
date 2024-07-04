@@ -8,6 +8,7 @@
             NetServer,
         }
         public bool logActive = true;
+        public readonly int logMaxLen = 100;
         public string logPrefix = "@";
         public bool showTime = true;
         public string logSep = "=>";

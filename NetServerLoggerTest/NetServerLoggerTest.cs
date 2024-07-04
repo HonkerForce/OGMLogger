@@ -6,6 +6,7 @@ public static class NetServerLoggerTest
     {
         OGMLogger.InitLogConfig();
         OGMLogger.Log("Log Log", LogColor.Green);
+        OGMLogger.Error("!!!Error!!!");
         Console.ReadKey();
     }
 }
