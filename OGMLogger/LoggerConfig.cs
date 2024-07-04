@@ -10,7 +10,7 @@
         public bool logActive = true;
         public string logPrefix = "@";
         public bool showTime = true;
-        public string logSep = ">>";
+        public string logSep = "=>";
         public bool showTread = true;
         public bool isSave = true;
         public bool coverSave = true;
