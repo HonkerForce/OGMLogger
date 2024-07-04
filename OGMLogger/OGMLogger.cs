@@ -186,6 +186,7 @@ namespace OGMUtility.Logger
 
         private static ILogger logger;
         public static LoggerConfig logConfig;
+        private static StreamWriter fileWriter;
         public static void InitLogConfig(LoggerConfig cfg = null)
         {
             if (cfg == null)
@@ -205,6 +206,42 @@ namespace OGMUtility.Logger
             {
                 logger = new UnityClientLogger();
             }
+
+            if (!logConfig.isSave)
+            {
+                return;
+            }
+
+            try
+            {
+                var filePath = logConfig.savePath + logConfig.saveFileName;
+                if (logConfig.coverSave)
+                {
+                    if (Directory.Exists(logConfig.savePath))
+                    {
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                        }
+                        else
+                        {
+                            File.Create(filePath);
+                        }
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(logConfig.savePath);
+                        File.Create(filePath);
+                    }
+                }
+
+                fileWriter = File.AppendText(filePath);
+                fileWriter.AutoFlush = true;
+            }
+            catch
+            {
+                fileWriter = null;
+            }
         }
 
         public static void Log(string msg, LogColor color)
@@ -213,7 +250,10 @@ namespace OGMUtility.Logger
             {
                 return;
             }
-            logger?.Log(PostProcessMsg(msg), color);
+
+            var printStr = PostProcessMsg(msg);
+            logger?.Log(printStr, color);
+            writeLogFile(printStr);
         }
 
         public static void Warning(string msg)
@@ -222,7 +262,9 @@ namespace OGMUtility.Logger
             {
                 return;
             }
-            logger?.Warning(PostProcessMsg(msg));
+            var printStr = PostProcessMsg(msg);
+            logger?.Warning(printStr);
+            writeLogFile(printStr);
         }
 
         public static void Error(string msg)
@@ -231,7 +273,18 @@ namespace OGMUtility.Logger
             {
                 return;
             }
-            logger?.Error(PostProcessMsg(msg, true));
+            var printStr = PostProcessMsg(msg,true);
+            logger?.Error(printStr);
+            writeLogFile(printStr);
+        }
+
+        private static void writeLogFile(string msg)
+        {
+            if (fileWriter == null)
+            {
+                return;
+            }
+            fileWriter.Write(msg);
         }
     }
 }

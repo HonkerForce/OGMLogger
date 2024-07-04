@@ -7,6 +7,7 @@ public static class NetServerLoggerTest
         OGMLogger.InitLogConfig();
         OGMLogger.Log("Log Log", LogColor.Green);
         OGMLogger.Error("!!!Error!!!");
+        OGMLogger.Warning("Warning!");
         Console.ReadKey();
     }
 }
