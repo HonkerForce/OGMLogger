@@ -147,7 +147,14 @@ namespace OGMUtility.Logger
             StringBuilder strBuilder = new(logConfig.logPrefix, logConfig.logMaxLen);
             if (logConfig.showTime)
             {
-                strBuilder.Append($"[{DateTime.Now.ToString("hh:mm:ss:fff")}]");
+                if (logConfig.loggerType == LoggerConfig.LoggerType.NetServer)
+                {
+                    strBuilder.Append($"[{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff")}]");
+                }
+                else if (logConfig.loggerType == LoggerConfig.LoggerType.UnityClient)
+                {
+                    strBuilder.Append($"[{DateTime.Now.ToString("hh:mm:ss:fff")}]");
+                }
             }
 
             if (logConfig.showTread)
@@ -162,6 +169,7 @@ namespace OGMUtility.Logger
                 string trace = GetStackTrace();
                 if (!String.IsNullOrEmpty(trace))
                 {
+                    strBuilder.Append($"StackTrace:");
                     strBuilder.Append(trace);
                     strBuilder.AppendLine();
                 }
@@ -178,7 +186,7 @@ namespace OGMUtility.Logger
             {
                 var trace = traces.GetFrame(i);
                 var traceMethod = trace.GetMethod();
-                strTraces.AppendLine($"\t{trace.GetFileName()} => {traceMethod.DeclaringType.Name}::{traceMethod.Name}({trace.GetFileLineNumber()})");
+                strTraces.Append($"\n\t{trace.GetFileName()} => {traceMethod.DeclaringType.Name}::{traceMethod.Name}({trace.GetFileLineNumber()})");
             }
 
             return strTraces.ToString();
