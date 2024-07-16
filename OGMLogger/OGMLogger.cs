@@ -86,7 +86,7 @@ namespace OGMUtility.Logger
             private MethodInfo debugMethod;
             public UnityClientLogger()
             {
-                debugType ??= Type.GetType("UnityEngine.Debug");
+                debugType ??= Type.GetType("UnityEngine.Debug,UnityEngine");
                 if (debugType != null)
                 {
                     debugMethod ??= debugType.GetMethod("Log", new[] { typeof(object) });
@@ -237,16 +237,12 @@ namespace OGMUtility.Logger
                         {
                             File.Delete(filePath);
                         }
-                        else
-                        {
-                            File.Create(filePath);
-                        }
                     }
                     else
                     {
                         Directory.CreateDirectory(logConfig.savePath);
-                        File.Create(filePath);
                     }
+                    File.Create(filePath);
                 }
 
                 fileWriter = File.AppendText(filePath);
