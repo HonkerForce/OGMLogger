@@ -15,7 +15,7 @@
         public bool showTread = true;
         public bool isSave = true;
         public bool coverSave = true;
-        public string savePath = $"{AppDomain.CurrentDomain.BaseDirectory}Logs\\";
+        public string savePath = $"{AppDomain.CurrentDomain.BaseDirectory}\\Logs\\";
         public string saveFileName = "GameLog.txt";
         public LoggerType loggerType = LoggerType.NetServer;
     }
