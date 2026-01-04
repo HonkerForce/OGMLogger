@@ -143,12 +143,7 @@ namespace OGMUtility.Logger
             }
         }
 
-        public OGMLogger()
-        {
-            InitLogConfig();
-        }
-
-        private string PostProcessMsg(string msg, bool isStackTrace = false)
+        private static string PostProcessMsg(string msg, bool isStackTrace = false)
         {
             StringBuilder strBuilder = new(logConfig.logPrefix, logConfig.logMaxLen);
             if (logConfig.showTime)
@@ -242,13 +237,14 @@ namespace OGMUtility.Logger
                     {
                         Directory.CreateDirectory(logConfig.savePath);
                     }
-                    File.Create(filePath);
+                    // File.Create(filePath);  创建成功后返回的StreamWriter，没有关闭的情况下会占用文件句柄，导致下面打开文件时返回null
                 }
 
-                fileWriter = File.AppendText(filePath);
+                using(fileWriter) {}  // 兼容多次初始化时，fileWriter存在已打开的文件
+                fileWriter = File.AppendText(filePath);  // 文件存在则打开文件，文件不存在则创建文件
                 fileWriter.AutoFlush = true;
             }
-            catch
+            catch(Exception e)
             {
                 fileWriter = null;
             }

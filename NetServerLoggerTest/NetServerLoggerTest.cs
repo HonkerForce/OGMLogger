@@ -5,9 +5,10 @@ public static class NetServerLoggerTest
     public static OGMLogger logger = new();
     public static void Main()
     {
-        logger.Log("Log Log", false, LogColor.Green);
-        logger.Error("!!!Error!!!");
-        logger.Warning("Warning!");
+        OGMLogger.InitLogConfig();
+        OGMLogger.Log("Log Log", false, LogColor.Green);
+        OGMLogger.Error("!!!Error!!!");
+        OGMLogger.Warning("Warning!");
 
         string s = "";
         s.Log("s Log");
