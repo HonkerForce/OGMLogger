@@ -142,8 +142,9 @@ namespace OGMUtility.Logger
                 return ret;
             }
         }
+        
 
-        private static string PostProcessMsg(string msg, bool isStackTrace = false)
+        private string PostProcessMsg(string msg, bool isStackTrace = false)
         {
             StringBuilder strBuilder = new(logConfig.logPrefix, logConfig.logMaxLen);
             if (logConfig.showTime)
