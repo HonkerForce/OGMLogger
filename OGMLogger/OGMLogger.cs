@@ -24,7 +24,7 @@ namespace OGMUtility.Logger
         void Error(string msg);
     }
     
-    public static class OGMLogger
+    public class OGMLogger
     {
         public class NetServerLogger : ILogger
         {
@@ -143,12 +143,12 @@ namespace OGMUtility.Logger
             }
         }
 
-        static OGMLogger()
+        public OGMLogger()
         {
             InitLogConfig();
         }
 
-        private static string PostProcessMsg(string msg, bool isStackTrace = false)
+        private string PostProcessMsg(string msg, bool isStackTrace = false)
         {
             StringBuilder strBuilder = new(logConfig.logPrefix, logConfig.logMaxLen);
             if (logConfig.showTime)
@@ -184,7 +184,7 @@ namespace OGMUtility.Logger
             return strBuilder.ToString();
         }
 
-        private static string GetStackTrace()
+        private string GetStackTrace()
         {
             StringBuilder strTraces = new(logConfig.logMaxLen);
             StackTrace traces = new(4, true);
@@ -198,10 +198,10 @@ namespace OGMUtility.Logger
             return strTraces.ToString();
         }
 
-        private static ILogger logger;
-        public static LoggerConfig logConfig;
-        private static StreamWriter fileWriter;
-        public static void InitLogConfig(LoggerConfig cfg = null)
+        private ILogger logger;
+        public LoggerConfig logConfig;
+        private StreamWriter fileWriter;
+        public void InitLogConfig(LoggerConfig cfg = null)
         {
             if (cfg == null)
             {
@@ -254,7 +254,7 @@ namespace OGMUtility.Logger
             }
         }
 
-        public static void Log(string msg, bool isShowStack = false, LogColor color = LogColor.None)
+        public void Log(string msg, bool isShowStack = false, LogColor color = LogColor.None)
         {
             if (!logConfig.logActive)
             {
@@ -268,7 +268,7 @@ namespace OGMUtility.Logger
                 writeLogFile($"[Log]{printStr}");
             }
         }
-        public static void LogTrace(string msg, bool isShowStack = true)
+        public void LogTrace(string msg, bool isShowStack = true)
         {
             if (!logConfig.logActive)
             {
@@ -283,7 +283,7 @@ namespace OGMUtility.Logger
             }
         }
 
-        public static void Warning(string msg)
+        public void Warning(string msg)
         {
             if (!logConfig.logActive)
             {
@@ -297,7 +297,7 @@ namespace OGMUtility.Logger
             }
         }
 
-        public static void Error(string msg)
+        public void Error(string msg)
         {
             if (!logConfig.logActive)
             {
@@ -311,7 +311,7 @@ namespace OGMUtility.Logger
             }
         }
 
-        private static void writeLogFile(string msg)
+        private void writeLogFile(string msg)
         {
             if (fileWriter == null)
             {
@@ -322,24 +322,24 @@ namespace OGMUtility.Logger
     }
 }
 
-public static class OGMLoggerExtensionMethods
-{
-    public static void Log(this object self, string msg, bool isShowStack = false, OGMUtility.Logger.LogColor color = OGMUtility.Logger.LogColor.None)
-    {
-        OGMUtility.Logger.OGMLogger.Log(msg, isShowStack, color);
-    }
-    public static void LogTrace(this object self, string msg, bool isShowStack = true)
-    {
-        OGMUtility.Logger.OGMLogger.LogTrace(msg, isShowStack);
-    }
-
-    public static void Warning(this object self, string msg)
-    {
-        OGMUtility.Logger.OGMLogger.Warning(msg);
-    }
-
-    public static void Error(this object self, string msg)
-    {
-        OGMUtility.Logger.OGMLogger.Error(msg);
-    }
-}
+// public static class OGMLoggerExtensionMethods
+// {
+//     public static void Log(this object self, string msg, bool isShowStack = false, OGMUtility.Logger.LogColor color = OGMUtility.Logger.LogColor.None)
+//     {
+//         OGMUtility.Logger.OGMLogger.Log(msg, isShowStack, color);
+//     }
+//     public static void LogTrace(this object self, string msg, bool isShowStack = true)
+//     {
+//         OGMUtility.Logger.OGMLogger.LogTrace(msg, isShowStack);
+//     }
+//
+//     public static void Warning(this object self, string msg)
+//     {
+//         OGMUtility.Logger.OGMLogger.Warning(msg);
+//     }
+//
+//     public static void Error(this object self, string msg)
+//     {
+//         OGMUtility.Logger.OGMLogger.Error(msg);
+//     }
+// }
