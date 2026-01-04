@@ -109,7 +109,7 @@ namespace OGMUtility.Logger
 
             private string genericMsg(string msg, LogColor color)
             {
-                string ret = "";
+                string ret = msg;
                 switch (color)
                 {
                     case LogColor.Grey:
@@ -155,15 +155,15 @@ namespace OGMUtility.Logger
             {
                 if (logConfig.loggerType == LoggerConfig.LoggerType.NetServer)
                 {
-                    strBuilder.Append($"[{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff")}]");
+                    strBuilder.Append($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}]");
                 }
                 else if (logConfig.loggerType == LoggerConfig.LoggerType.UnityClient)
                 {
-                    strBuilder.Append($"[{DateTime.Now.ToString("hh:mm:ss:fff")}]");
+                    strBuilder.Append($"[{DateTime.Now.ToString("HH:mm:ss:fff")}]");
                 }
             }
 
-            if (logConfig.showTread)
+            if (logConfig.showThread)
             {
                 strBuilder.Append($"<{Thread.CurrentThread.ManagedThreadId}>:");
             }

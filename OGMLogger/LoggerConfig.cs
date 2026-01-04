@@ -12,7 +12,7 @@
         public string logPrefix = "@";
         public bool showTime = true;
         public string logSep = "=>";
-        public bool showTread = true;
+        public bool showThread = true;
         public bool isSave = true;
         public bool coverSave = true;
         public string savePath = $"{AppDomain.CurrentDomain.BaseDirectory}\\Logs\\";
