@@ -4,6 +4,7 @@ public static class NetServerLoggerTest
 {
     public static void Main()
     {
+        OGMLogger.InitLogConfig();
         OGMLogger.Log("Log Log", false, LogColor.Green);
         OGMLogger.Error("!!!Error!!!");
         OGMLogger.Warning("Warning!");
