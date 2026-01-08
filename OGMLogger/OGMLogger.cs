@@ -24,21 +24,33 @@ namespace OGMUtility.Logger
         void Error(string msg);
     }
     
+    
     public class OGMLogger
     {
-        public class NetServerLogger : ILogger
+        private abstract class LoggerBase : ILogger
         {
-            public void Log(string msg, LogColor color = LogColor.None)
+            public Action<string> externalLog;
+            public Action<string> externalWarning;
+            public Action<string> externalError;
+        
+            public abstract void Log(string msg, LogColor color = LogColor.None);
+            public abstract void Warning(string msg);
+            public abstract void Error(string msg);
+        }
+        
+        private class NetServerLogger : LoggerBase
+        {
+            public override void Log(string msg, LogColor color = LogColor.None)
             {
                 printLog(msg, color);
             }
 
-            public void Warning(string msg)
+            public override void Warning(string msg)
             {
                 printLog(msg, LogColor.Yellow);
             }
 
-            public void Error(string msg)
+            public override void Error(string msg)
             {
                 printLog(msg, LogColor.Red);
             }
@@ -79,8 +91,8 @@ namespace OGMUtility.Logger
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
         }
-        
-        public class UnityClientLogger : ILogger
+
+        private class UnityClientLogger : LoggerBase
         {
             private Type debugType = Type.GetType("UnityEngine.Debug");
             private MethodInfo debugMethod;
@@ -92,17 +104,17 @@ namespace OGMUtility.Logger
                     debugMethod ??= debugType.GetMethod("Log", new[] { typeof(object) });
                 }
             }
-            public void Log(string msg, LogColor color = LogColor.None)
+            public override void Log(string msg, LogColor color = LogColor.None)
             {
                 debugMethod?.Invoke(null, new[] { genericMsg(msg, color) });
             }
 
-            public void Warning(string msg)
+            public override void Warning(string msg)
             {
                 debugMethod?.Invoke(null, new[] { genericMsg(msg, LogColor.Yellow) });
             }
 
-            public void Error(string msg)
+            public override void Error(string msg)
             {
                 debugMethod?.Invoke(null, new[] { genericMsg(msg, LogColor.Red) });
             }
@@ -143,7 +155,13 @@ namespace OGMUtility.Logger
             }
         }
         
-
+        public void InitExternalLogger(Action<string> log, Action<string> warning, Action<string> error)
+        {
+            logger.externalLog = log;
+            logger.externalWarning = warning;
+            logger.externalError = error;
+        }
+        
         private string PostProcessMsg(string msg, bool isStackTrace = false)
         {
             StringBuilder strBuilder = new(logConfig.logPrefix, logConfig.logMaxLen);
@@ -194,7 +212,7 @@ namespace OGMUtility.Logger
             return strTraces.ToString();
         }
 
-        private ILogger logger;
+        private LoggerBase logger;
         public LoggerConfig logConfig;
         private StreamWriter fileWriter;
         public void InitLogConfig(LoggerConfig cfg = null)
@@ -253,58 +271,86 @@ namespace OGMUtility.Logger
 
         public void Log(string msg, bool isShowStack = false, LogColor color = LogColor.None)
         {
-            if (!logConfig.logActive)
+            if (!logConfig.logActive || logger == null)
             {
                 return;
             }
 
             var printStr = PostProcessMsg(msg, isShowStack);
-            logger?.Log(printStr, color);
-            if (logConfig.isSave)
+            if (logger.externalLog != null)
             {
-                writeLogFile($"[Log]{printStr}");
+                logger.externalLog(printStr);
+            }
+            else
+            {
+                logger.Log(printStr, color);
+                if (logConfig.isSave)
+                {
+                    writeLogFile($"[Log]{printStr}");
+                }
             }
         }
         public void LogTrace(string msg, bool isShowStack = true)
         {
-            if (!logConfig.logActive)
+            if (!logConfig.logActive || logger == null)
             {
                 return;
             }
 
             var printStr = PostProcessMsg(msg, isShowStack);
-            logger?.Log(printStr);
-            if (logConfig.isSave)
+            if (logger.externalLog != null)
             {
-                writeLogFile($"[Log]{printStr}");
+                logger.externalWarning(printStr);
+            }
+            else
+            {
+                logger.Log(printStr);
+                if (logConfig.isSave)
+                {
+                    writeLogFile($"[Log]{printStr}");
+                }
             }
         }
 
         public void Warning(string msg)
         {
-            if (!logConfig.logActive)
+            if (!logConfig.logActive || logger == null)
             {
                 return;
             }
             var printStr = PostProcessMsg(msg);
-            logger?.Warning(printStr);
-            if (logConfig.isSave)
+            if (logger.externalWarning != null)
             {
-                writeLogFile($"[Warning]{printStr}");
+                logger.externalWarning(printStr);
+            }
+            else
+            {
+                logger.Warning(printStr);
+                if (logConfig.isSave)
+                {
+                    writeLogFile($"[Warning]{printStr}");
+                }
             }
         }
 
         public void Error(string msg)
         {
-            if (!logConfig.logActive)
+            if (!logConfig.logActive || logger == null)
             {
                 return;
             }
             var printStr = PostProcessMsg(msg,true);
-            logger?.Error(printStr);
-            if (logConfig.isSave)
+            if (logger.externalError != null)
             {
-                writeLogFile($"[Error]{printStr}");
+                logger.externalError(printStr);
+            }
+            else
+            {
+                logger.Error(printStr);
+                if (logConfig.isSave)
+                {
+                    writeLogFile($"[Error]{printStr}");
+                }
             }
         }
 
