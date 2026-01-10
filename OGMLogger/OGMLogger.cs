@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace OGMUtility.Logger
 {        
@@ -271,86 +274,92 @@ namespace OGMUtility.Logger
 
         public void Log(string msg, bool isShowStack = false, LogColor color = LogColor.None)
         {
-            if (!logConfig.logActive || logger == null)
+            string printStr = "";
+            if (logger.externalLog != null)
+            {
+                printStr = PostProcessMsg(msg, isShowStack);
+                logger?.externalLog(printStr);
+                return;
+            }
+            
+            if (!logConfig.logActive)
             {
                 return;
             }
 
-            var printStr = PostProcessMsg(msg, isShowStack);
-            if (logger.externalLog != null)
+            printStr = PostProcessMsg(msg, isShowStack);
+            logger?.Log(printStr, color);
+            if (logConfig.isSave)
             {
-                logger.externalLog(printStr);
-            }
-            else
-            {
-                logger.Log(printStr, color);
-                if (logConfig.isSave)
-                {
-                    writeLogFile($"[Log]{printStr}");
-                }
+                writeLogFile($"[Log]{printStr}");
             }
         }
         public void LogTrace(string msg, bool isShowStack = true)
         {
-            if (!logConfig.logActive || logger == null)
+            string printStr = "";
+            if (logger.externalLog != null)
+            {
+                printStr = PostProcessMsg(msg, isShowStack);
+                logger?.externalWarning(printStr);
+                return;
+            }
+            
+            if (!logConfig.logActive)
             {
                 return;
             }
 
-            var printStr = PostProcessMsg(msg, isShowStack);
-            if (logger.externalLog != null)
+            printStr = PostProcessMsg(msg, isShowStack);
+            logger?.Log(printStr);
+            if (logConfig.isSave)
             {
-                logger.externalWarning(printStr);
-            }
-            else
-            {
-                logger.Log(printStr);
-                if (logConfig.isSave)
-                {
-                    writeLogFile($"[Log]{printStr}");
-                }
+                writeLogFile($"[Log]{printStr}");
             }
         }
 
         public void Warning(string msg)
         {
-            if (!logConfig.logActive || logger == null)
+            string printStr = "";
+            if (logger.externalWarning != null)
+            {
+                printStr = PostProcessMsg(msg);
+                logger?.externalWarning(printStr);
+                return;
+            }
+            
+            if (!logConfig.logActive)
             {
                 return;
             }
-            var printStr = PostProcessMsg(msg);
-            if (logger.externalWarning != null)
+            
+            printStr = PostProcessMsg(msg);
+            logger?.Warning(printStr);
+            if (logConfig.isSave)
             {
-                logger.externalWarning(printStr);
-            }
-            else
-            {
-                logger.Warning(printStr);
-                if (logConfig.isSave)
-                {
-                    writeLogFile($"[Warning]{printStr}");
-                }
+                writeLogFile($"[Warning]{printStr}");
             }
         }
 
         public void Error(string msg)
         {
-            if (!logConfig.logActive || logger == null)
+            string printStr = "";
+            if (logger.externalError != null)
+            {
+                printStr = PostProcessMsg(msg);
+                logger?.externalError(printStr);
+                return;
+            }
+            
+            if (!logConfig.logActive)
             {
                 return;
             }
-            var printStr = PostProcessMsg(msg,true);
-            if (logger.externalError != null)
+            
+            printStr = PostProcessMsg(msg,true);
+            logger?.Error(printStr);
+            if (logConfig.isSave)
             {
-                logger.externalError(printStr);
-            }
-            else
-            {
-                logger.Error(printStr);
-                if (logConfig.isSave)
-                {
-                    writeLogFile($"[Error]{printStr}");
-                }
+                writeLogFile($"[Error]{printStr}");
             }
         }
 

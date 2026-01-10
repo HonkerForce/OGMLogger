@@ -1,4 +1,6 @@
-﻿namespace OGMUtility.Logger
+﻿using System;
+
+namespace OGMUtility.Logger
 {
     public class LoggerConfig
     {
